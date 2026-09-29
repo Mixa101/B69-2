@@ -1,3 +1,4 @@
-from django.contrib import admin
+from urllib.request import AbstractDigestAuthHandler
 
 # Register your models here.
+AbstractDigestAuthHandler

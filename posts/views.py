@@ -2,6 +2,8 @@ from datetime import datetime
 
 from django.http.response import HttpResponse
 
+from posts.models import Post
+
 # Create your views here.
 
 
@@ -10,8 +12,8 @@ def hello(r):
 
 
 def name(r):
-    name = "Islam"
-    return HttpResponse(f"Hello <h1>{name}</h1>")
+    name = Post.objects.get(id=2)
+    return HttpResponse(f"Hello <h1>{name.title}</h1>")
 
 
 def time(r):
