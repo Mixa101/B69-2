@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.title }} | Мой Блог{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        
+        <!-- Хлебные крошки -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'post_list' %}" class="text-decoration-none">Главная</a></li>
+                <li class="breadcrumb-item"><a href="#" class="text-decoration-none">{{ post.category|default:"Без категории" }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ post.title|truncatechars:30 }}</li>
+            </ol>
+        </nav>
+
+        <!-- Заголовок и мета -->
+        <div class="mb-4">
+            <h1 class="display-5 fw-bold mb-3">{{ post.title }}</h1>
+            <hr>
+        </div>
+
+        <!-- Изображение или заглушка -->
+        {% if post.image %}
+        <div class="mb-4">
+            <img src="{{ post.image.url }}" class="img-fluid rounded shadow" alt="{{ post.title }}">
+            {% if post.image_caption %}
+            <figcaption class="text-center text-muted mt-2 small">{{ post.image_caption }}</figcaption>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="mb-4">
+            <div class="post-img-placeholder rounded" style="height: 400px; font-size: 5rem;">
+                <i class="bi bi-image"></i>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Основной контент -->
+        <article class="mb-5">
+            <div class="lead mb-4 text-secondary">
+                {{ post.description }}
+            </div>
+        </article>
+
+        </div>
+
+        <!-- Кнопка возврата -->
+        <div class="text-center mb-5">
+            <a href="{% url 'post_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left-circle"></i> Вернуться к списку
+            </a>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
