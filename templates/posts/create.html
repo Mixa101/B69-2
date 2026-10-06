@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block title %}Создать пост | Мой Блог{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        
+        <!-- Заголовок страницы -->
+        <div class="mb-4">
+            <h1 class="display-6 fw-bold">
+                <i class="bi bi-plus-circle"></i> Создать новый пост
+            </h1>
+            <p class="text-muted">Заполните форму ниже, чтобы опубликовать запись</p>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                
+                <!-- ВАЖНО: enctype="multipart/form-data" для загрузки файлов -->
+                <form method="post" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Поле Title -->
+                    <div class="mb-4">
+                        <label for="id_title" class="form-label fw-bold">
+                            Заголовок <span class="text-danger">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control form-control-lg {% if errors.title %}is-invalid{% endif %}" 
+                            id="id_title" 
+                            name="title" 
+                            placeholder="Введите заголовок поста..."
+                            value="{{ request.POST.title|default:'' }}"
+                            required
+                            maxlength="200"
+                        >
+                        {% if errors.title %}
+                        <div class="invalid-feedback">
+                            {{ errors.title.0 }}
+                        </div>
+                        {% else %}
+                        <div class="form-text">Максимум 200 символов</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Поле Description -->
+                    <div class="mb-4">
+                        <label for="id_description" class="form-label fw-bold">
+                            Описание <span class="text-danger">*</span>
+                        </label>
+                        <textarea 
+                            class="form-control {% if errors.description %}is-invalid{% endif %}" 
+                            id="id_description" 
+                            name="description" 
+                            rows="8"
+                            placeholder="Напишите содержание поста здесь..."
+                            required
+                        >{{ request.POST.description|default:'' }}</textarea>
+                        {% if errors.description %}
+                        <div class="invalid-feedback">
+                            {{ errors.description.0 }}
+                        </div>
+                        {% else %}
+                        <div class="form-text">
+                            <span id="charCount">0</span> символов | Поддерживается перенос строк
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Поле Image -->
+                    <div class="mb-4">
+                        <label for="id_image" class="form-label fw-bold">
+                            Изображение <span class="text-muted fw-normal">(необязательно)</span>
+                        </label>
+                        <input 
+                            type="file" 
+                            class="form-control {% if errors.image %}is-invalid{% endif %}" 
+                            id="id_image" 
+                            name="image" 
+                            accept="image/*"
+                        >
+                        {% if errors.image %}
+                        <div class="invalid-feedback">
+                            {{ errors.image.0 }}
+                        </div>
+                        {% else %}
+                        <div class="form-text">JPG, PNG, WEBP. Максимум 5MB</div>
+                        {% endif %}
+                        
+                        <!-- Превью загружаемого изображения -->
+                        <div id="imagePreview" class="mt-3 d-none">
+                            <img src="" class="img-fluid rounded shadow-sm" style="max-height: 300px;" alt="Preview">
+                            <div class="mt-2">
+                                <button type="button" class="btn btn-sm btn-outline-danger" id="removeImage">
+                                    <i class="bi bi-x-circle"></i> Убрать
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Кнопки -->
+                    <div class="d-flex gap-2 justify-content-end border-top pt-4">
+                        <a href="{% url 'post_list' %}" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-x-lg"></i> Отмена
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg px-4">
+                            <i class="bi bi-send"></i> Опубликовать
+                        </button>
+                    </div>
+                    
+                </form>
+            </div>
+        </div>
+
+        <!-- Подсказка -->
+        <div class="alert alert-info mt-4">
+            <i class="bi bi-lightbulb"></i> 
+            <strong>Совет:</strong> Хороший пост начинается с цепляющего заголовка. Описание можно отформатировать переносами строк.
+        </div>
+
+    </div>
+</div>
+
+<!-- JavaScript для превью и счётчика -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Счётчик символов для description
+    const descField = document.getElementById('id_description');
+    const charCount = document.getElementById('charCount');
+    
+    if (descField && charCount) {
+        descField.addEventListener('input', function() {
+            charCount.textContent = this.value.length;
+        });
+        // Инициализация при загрузке (если вернулись с ошибкой)
+        charCount.textContent = descField.value.length;
+    }
+    
+    // Превью изображения
+    const imageInput = document.getElementById('id_image');
+    const preview = document.getElementById('imagePreview');
+    const previewImg = preview.querySelector('img');
+    const removeBtn = document.getElementById('removeImage');
+    
+    if (imageInput) {
+        imageInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                // Проверка типа файла
+                if (!file.type.match('image.*')) {
+                    alert('Пожалуйста, выберите файл изображения');
+                    this.value = '';
+                    return;
+                }
+                
+                // Проверка размера (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Файл слишком большой. Максимум 5MB');
+                    this.value = '';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    preview.classList.remove('d-none');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    
+    if (removeBtn) {
+        removeBtn.addEventListener('click', function() {
+            imageInput.value = '';
+            preview.classList.add('d-none');
+            previewImg.src = '';
+        });
+    }
+});
+</script>
+{% endblock %}
