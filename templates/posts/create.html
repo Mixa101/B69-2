@@ -44,7 +44,35 @@
                         <div class="form-text">Максимум 200 символов</div>
                         {% endif %}
                     </div>
-
+<!-- Поле Category -->
+<div class="mb-4">
+    <label for="id_category" class="form-label fw-bold">
+        Категория <span class="text-danger">*</span>
+    </label>
+    <select
+        class="form-select {% if errors.category_id %}is-invalid{% endif %}"
+        id="id_category"
+        name="category"
+        required
+    >
+        <option value="" disabled {% if not request.POST.category_id %}selected{% endif %}>
+            Выберите категорию...
+        </option>
+        {% for category in categories %}
+        <option
+            value="{{ category.id }}"
+            {% if request.POST.category_id == category.id|stringformat:"s" %}selected{% endif %}
+        >
+            {{ category.title }}
+        </option>
+        {% endfor %}
+    </select>
+    {% if errors.category_id %}
+    <div class="invalid-feedback">
+        {{ errors.category_id.0 }}
+    </div>
+    {% endif %}
+</div>
                     <!-- Поле Description -->
                     <div class="mb-4">
                         <label for="id_description" class="form-label fw-bold">

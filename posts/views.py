@@ -1,7 +1,8 @@
 from django.http.request import HttpRequest
 from django.shortcuts import redirect, render
 
-from posts.models import Post
+from posts.forms import PostForm
+from posts.models import Category, Post
 
 
 # Create your views here.
@@ -14,18 +15,16 @@ def post_list(request: HttpRequest):
 
 def post_detail(r, pk):
     post = Post.objects.get(id=pk)  # SELECT * FROM posts WHERE id = ?;
-    print(r.path)
     return render(r, "posts/detail.html", context={"post": post})
 
 
 def create_post(request: HttpRequest):
 
     if request.method.lower() == "post":
-        title = request.POST.get("title")
-        description = request.POST.get("description")
-        image = request.FILES.get("image")
-        post = Post.objects.create(title=title, description=description, image=image)
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect("post_detail", form.instance.pk)
 
-        return redirect("post_detail", post.pk)
-
-    return render(request, "posts/create.html")
+    categories = Category.objects.all()
+    return render(request, "posts/create.html", {"categories": categories})
