@@ -44,7 +44,17 @@
             </div>
         </article>
 
+        <!-- Действия автора -->
+        {% if post.user == request.user %}
+        <div class="d-flex justify-content-end gap-2 mb-4">
+            <a href="{% url 'edit_post' post.pk %}" class="btn btn-outline-primary">
+                <i class="bi bi-pencil-square"></i> Редактировать
+            </a>
+            <a href="{% url 'delete_post' post.pk %}" class="btn btn-outline-danger">
+                <i class="bi bi-trash"></i> Удалить
+            </a>
         </div>
+        {% endif %}
 
         <!-- Кнопка возврата -->
         <div class="text-center mb-5">

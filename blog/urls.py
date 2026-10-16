@@ -18,16 +18,24 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.urls import path
 
-from posts.views import create_post, post_detail, post_list
+from posts.views import create_post, delete_post, edit_post, post_detail, post_list
+from user.views import register
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("login", auth_views.LoginView.as_view(), name="login"),
+    path("logout", auth_views.LogoutView.as_view(), name="logout"),
+    path("register", register, name="register"),
     path("", post_list, name="post_list"),
     path("post/create/", create_post, name="create_post"),
+    path("post/<int:pk>/edit", edit_post, name="edit_post"),
+    path("post/<int:pk>/delete", delete_post, name="delete_post"),
     path("post/<int:pk>", post_detail, name="post_detail"),
 ]
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, dcoument_root=settings.STATIC_ROOT)

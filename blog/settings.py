@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "posts",
+    "user",
 ]
 
 MIDDLEWARE = [
@@ -119,7 +120,9 @@ STATIC_URL = "static/"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
-
+LOGIN_REDIRECT_URL = "post_list"
+LOGOUT_REDIRECT_URL = "post_list"
+LOGIN_URL = "login"
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
