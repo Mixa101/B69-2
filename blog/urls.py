@@ -21,7 +21,13 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
-from posts.views import create_post, delete_post, edit_post, post_detail, post_list
+from posts.views import (
+    PostCreateView,
+    PostDeleteView,
+    PostDetailView,
+    PostListView,
+    UpdatePostView,
+)
 from user.views import register
 
 urlpatterns = [
@@ -29,11 +35,11 @@ urlpatterns = [
     path("login", auth_views.LoginView.as_view(), name="login"),
     path("logout", auth_views.LogoutView.as_view(), name="logout"),
     path("register", register, name="register"),
-    path("", post_list, name="post_list"),
-    path("post/create/", create_post, name="create_post"),
-    path("post/<int:pk>/edit", edit_post, name="edit_post"),
-    path("post/<int:pk>/delete", delete_post, name="delete_post"),
-    path("post/<int:pk>", post_detail, name="post_detail"),
+    path("", PostListView.as_view(), name="post_list"),
+    path("post/create/", PostCreateView.as_view(), name="create_post"),
+    path("post/<int:pk>/edit", UpdatePostView.as_view(), name="edit_post"),
+    path("post/<int:pk>/delete", PostDeleteView.as_view(), name="delete_post"),
+    path("post/<int:id>", PostDetailView.as_view(), name="post_detail"),
 ]
 
 
